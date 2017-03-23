@@ -1,0 +1,19 @@
+<div class="logIn" ng-controller="Test">
+    <div class="container-fluid content wrapper">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right paragraph">
+                <p>Join the <span>AngularChat</span> now!</p>
+                <p id="notifyUser"></p>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <form class="form" action="phpscript.php" method="get">
+                    <input type="Email" id="username" placeholder="Username">
+                    <input type="password" id="password" name="password" placeholder=" Password">
+                    <input class="btn btn-primary btn-block btn-large" type="button" name="logIn" ng-click="logIn()" value="Log In" id="logIn">
+                    <input class="btn btn-primary btn-block btn-large" type="button" name="signUp" ng-click="signUp()" value="Sign Up" id="signUp">
+                    <input class="btn btn-primary btn-block btn-large" type="button" name="connectFB" ng-click="connectFB()" value="Connect through facebook" id="connectFB">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

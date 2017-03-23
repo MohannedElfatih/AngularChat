@@ -1,0 +1,13 @@
+<div class="container-fluid " ng-cloak ng-controller="main">
+    <div class="row chatBox">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="chat row" id="chat" scroll-glue>
+                <p scroll-glue-anchor ng-repeat="message in messages"  id="messages"><span>{{message.name}}: </span>{{message.message}} </p>
+            </div>
+            <div class="chatSubmitBox row">
+                <input type="text" ng-model="textBox" id="chatText" ng-keypress="($event.which === 13)?submit():0">
+                <button class="btn btn-primary btn-small" value="Submit" ng-click="submit()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
