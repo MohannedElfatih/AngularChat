@@ -1,6 +1,6 @@
 /*global angular */
 /*global firebase*/
-var app1 = angular.module('main', ['firebase', 'ngRoute'], 'luegg.directives');
+var app1 = angular.module('main', ['firebase', 'ngRoute', 'luegg.directives']);
 
 var config = {
     apiKey: "AIzaSyDevYmwxc63JZ9Ut7zwYyFSvnOKYpREfpo",
@@ -11,15 +11,15 @@ var config = {
 };
 firebase.initializeApp(config);
 
-app1.config(function ($routeProvider, $locationProvider) {
+app1.config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('');
     $routeProvider
         .when('/', {
-            templateUrl: '../views/startUp.html',
+            templateUrl: './views/startUp.html',
             controller: 'main'
         })
         .when('/main', {
-            templateUrl: '../views/main.html',
+            templateUrl: './views/main.html',
             controller: 'Test'
         })
         .otherwise({
@@ -27,35 +27,36 @@ app1.config(function ($routeProvider, $locationProvider) {
         });
 });
 
-app1.directive('myRepeatDirective', function ($timeout) {
+app1.directive('messagesData', ['$location', '$anchorScroll', function($location, $anchorScroll){
     return {
         scope: {
-            schrollBottom: "="
+            message: "=",
         },
-        link: function (scope, element) {
-            scope.$watchCollection('schrollBottom', function (newValue) {
-                if (newValue) {
-                    $(element).scrollTop($(element)[0].scrollHeight);
-                }
-            });
+        template: '<p><span>{{message.name}}: </span>{{message.message}}</p>',
+        restrict: 'E',
+        compile: function(element, attrs) {
+            console.log("compiler");
+            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+        },
+        link: function(element, attrs) {
+          document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
         }
-    }
-});
+    };
+}]);
 
-app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
+app1.controller('main', function($scope, $rootScope, $firebaseObject) {
+    $scope.glued = true;
     const rootRef = firebase.database().ref();
     $scope.object = $firebaseObject(rootRef);
     $scope.firebasedataRef = firebase.database().ref().child("messages").limitToLast(30);
     console.log($rootScope.user);
-    
-    
     var user = firebase.auth().currentUser;
     $scope.firebasedataRef.on('value', snap => {
         console.log(snap.val());
         console.log(snap.numChildren());
         var counter = 0;
         $scope.messages = new Array();
-        snap.forEach(function (childSnapshot) {
+        snap.forEach(function(childSnapshot) {
             console.log(childSnapshot.child('message').val());
             console.log(childSnapshot.child('name').val());
             $scope.messages.push({
@@ -64,14 +65,14 @@ app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
             });
         });
     });
-    
-    $scope.scrolldown = function(){
+
+    $scope.scrolldown = function() {
         console.log("scrolling");
         document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
     };
-    
-    
-    $scope.submit = function () {
+
+
+    $scope.submit = function() {
         var pushMessage = rootRef.child("messages").push();
         pushMessage.set({
             "message": $scope.textBox,
@@ -80,13 +81,13 @@ app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
 
         $scope.textBox = '';
 
-        $scope.$on('ngRepeatFinished', function (ngRepeatFinishedEvent) {
+        $scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
             document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
         });
     };
 });
 
-app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject) {
+app1.controller('Test', function($location, $scope, $rootScope, $firebaseObject) {
     const rootRef = firebase.database().ref();
     var object = $firebaseObject(rootRef);
     var provider = new firebase.auth.FacebookAuthProvider();
@@ -97,7 +98,7 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
     const connectFB = document.getElementById('connectFB');
     var signUp = document.getElementById('signUp');
 
-    $scope.signUp = function (e) {
+    $scope.signUp = function(e) {
         const auth = firebase.auth();
         const promise = auth.createUserWithEmailAndPassword(
             document.getElementById("username").value,
@@ -116,7 +117,7 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
             .catch(e => console.log(e.message));
     };
 
-    $scope.logIn = function (e) {
+    $scope.logIn = function(e) {
         $location.path("#main");
         const auth = firebase.auth();
         const promise = auth.signInWithEmailAndPassword(document.getElementById("username").value,
@@ -128,17 +129,17 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
             .catch(e => console.log(e.message));
     };
 
-    $scope.logOut = function (e) {
+    $scope.logOut = function(e) {
         firebase.auth().signOut();
     };
 
-    $scope.connectFB = function (e) {
-        alert("Test");
+    $scope.connectFB = function(e) {
         var provider = new firebase.auth.FacebookAuthProvider();
         firebase.auth().signInWithPopup(provider)
             .then(result => {
                 var token = result.credential.accessToken;
                 var user = result.user;
+                $location.path('/main');
                 console.log(user);
             }).catch(e => {
                 console.log("error code is " + e.code);
@@ -155,7 +156,7 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
             $location.path('/main');
         } else {
             console.log('not logged in');
-            $location.path('/startUp');
+            $location.path('/');
         }
     });
 });
