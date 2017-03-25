@@ -27,7 +27,7 @@ app1.config(function($routeProvider, $locationProvider) {
         });
 });
 
-app1.directive('messagesData', ['$location', '$anchorScroll', function($location, $anchorScroll){
+app1.directive('messagesData', ['$location', '$anchorScroll', function($location, $anchorScroll) {
     return {
         scope: {
             message: "=",
@@ -39,13 +39,22 @@ app1.directive('messagesData', ['$location', '$anchorScroll', function($location
             document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
         },
         link: function(element, attrs) {
-          document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
         }
     };
 }]);
 
+app1.directive('notifyUser', function() {
+    return {
+        scope: false,
+        template: '<p id="notifyUser">{{notifyUser}}</p>',
+        restrict: "E"
+    }
+});
+
 app1.controller('main', function($scope, $rootScope, $firebaseObject) {
     $scope.glued = true;
+    $scope.notifyUser = "Welcome! Enter credentials to Sign up.";
     const rootRef = firebase.database().ref();
     $scope.object = $firebaseObject(rootRef);
     $scope.firebasedataRef = firebase.database().ref().child("messages").limitToLast(30);
@@ -71,6 +80,15 @@ app1.controller('main', function($scope, $rootScope, $firebaseObject) {
         document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
     };
 
+    $scope.signOut = function(){
+      console.log("Am in signout function");
+      firebase.auth().signOut()
+      .then(function(){
+        console.log("Signed out");
+      }).catch(function(error){
+          console.log(error.message);
+      });
+    }
 
     $scope.submit = function() {
         var pushMessage = rootRef.child("messages").push();
@@ -87,7 +105,7 @@ app1.controller('main', function($scope, $rootScope, $firebaseObject) {
     };
 });
 
-app1.controller('Test', function($location, $scope, $rootScope, $firebaseObject) {
+app1.controller('Test', function($location, $scope, $rootScope, $firebaseObject, $timeout) {
     const rootRef = firebase.database().ref();
     var object = $firebaseObject(rootRef);
     var provider = new firebase.auth.FacebookAuthProvider();
@@ -99,47 +117,51 @@ app1.controller('Test', function($location, $scope, $rootScope, $firebaseObject)
     var signUp = document.getElementById('signUp');
 
     $scope.signUp = function(e) {
+        $scope.notifyUser = "Signing Up...";
+        var signUpTimeout = $timeout(function() {
+            $scope.notifyUser = "An error happened, check credentials.";
+        }, 5000);
         const auth = firebase.auth();
         const promise = auth.createUserWithEmailAndPassword(
             document.getElementById("username").value,
             document.getElementById("password").value);
-        promise
-            .then(user => {
+        promise.then(user => {
                 console.log(user)
-                angular.element(document.querySelector('#notifyUser'))
-                    .text("Signed up successfully.");
-                angular.element(document.querySelector('#notifyUser'))
-                    .className = "show";
-                setTimeout(() => {
-                    document.getElementById('notifyUser').className = 'hide';
-                }, 6000);
+                $timeout.cancel(signUpTimeout);
+                $scope.logIn();
             })
-            .catch(e => console.log(e.message));
+            .catch(e => {
+                console.log(e.message)
+
+            });
     };
 
     $scope.logIn = function(e) {
-        $location.path("#main");
-        const auth = firebase.auth();
-        const promise = auth.signInWithEmailAndPassword(document.getElementById("username").value,
+        $scope.notifyUser = "Logging in...";
+        var logInTimeOut = $timeout(function() {
+            $scope.notifyUser = "An error happened, check credentials.";
+        }, 3000);
+        const promise = firebase.auth().signInWithEmailAndPassword(document.getElementById("username").value,
             document.getElementById("password").value);
-        promise
-            .then(user => {
-                console.log(user);
-            })
-            .catch(e => console.log(e.message));
-    };
-
-    $scope.logOut = function(e) {
-        firebase.auth().signOut();
+        promise.then(user => {
+            $timeout.cancel(logInTimeOut);
+            $location.path("/main");
+            console.log(user);
+        }).catch(e => {
+            console.log(e.message);
+        });
+        console.log($scope.notifyUser);
     };
 
     $scope.connectFB = function(e) {
+        $scope.notifyUser = "Logging in...";
         var provider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithPopup(provider)
-            .then(result => {
+        const promise = firebase.auth().signInWithPopup(provider);
+        promise.then(result => {
                 var token = result.credential.accessToken;
                 var user = result.user;
-                $location.path('/main');
+                $location.path("/main");
+                $scope.$apply();
                 console.log(user);
             }).catch(e => {
                 console.log("error code is " + e.code);
@@ -150,12 +172,15 @@ app1.controller('Test', function($location, $scope, $rootScope, $firebaseObject)
     };
 
     firebase.auth().onAuthStateChanged(firebaseUser => {
+        $rootScope.user = firebaseUser;
         if (firebaseUser) {
+            $scope.notifyUser = "Logging in...";
+            $location.path("/main");
             $rootScope.user = firebaseUser;
             console.log(firebaseUser);
-            $location.path('/main');
         } else {
-            console.log('not logged in');
+            $scope.notifyUser = "Enter info to Sign Up.";
+            console.log('Enter info');
             $location.path('/');
         }
     });

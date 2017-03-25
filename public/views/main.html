@@ -1,8 +1,19 @@
 <div class="container-fluid " ng-cloak ng-controller="main">
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <span class="navbar-brand">Angular<span id="headerChat">Chat</span></span>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href ng-click="signOut()">Sign Out</a></li>
+            </ul>
+        </div>
+    </nav>
     <div class="row chatBox">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="chat row" id="chat" scroll-glue>
-                <messages-data ng-repeat="message in messages" id={{$index}} message="message"></message-data>
+                <messages-data ng-repeat="message in messages" id={{$index}} message="message">
+                    </message-data>
             </div>
             <div class="chatSubmitBox row">
                 <input type="text" ng-model="textBox" id="chatText" ng-keypress="($event.which === 13)?submit():0">

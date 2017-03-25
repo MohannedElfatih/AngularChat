@@ -66,14 +66,53 @@ footer {
     padding-top: 60px;
 }
 
+.navbar{
+  margin-bottom: 0;
+  display: block;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.navbar .navbar-nav:focus,
+.navbar .navbar-nav:active {
+  outline: none;
+}
+.navbar .navbar-nav {
+  font-weight: 700;
+}
+.navbar .navbar-nav:focus {
+  outline: none;
+}
+.navbar-nav{
+  color: white;
+}
+.navbar-nav a{
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.navbar-header{
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.navbar-header span{
+  font-size: 140%;
+  color: white;
+}
+
+.navbar-header #headerChat{
+  color: red;
+}
+
 .chatBox {
-    position: absolute;
     border: 1px;
-    border-radius: 5px;
+    border-radius: 2px;
     border-width: 1px;
     border-style: solid;
     border-color: aqua;
     height: 200px;
+    margin: 20px;
     top: 3%;
     left: 5%;
     right: 5%;
@@ -82,7 +121,8 @@ footer {
 
 .chat {
     height: 160px;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     margin-left: 4px;
 }
 
@@ -92,6 +132,8 @@ footer {
     color: rgba(255, 255, 255, 0.45);
     top: auto;
     text-align: left;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .chatSubmitBox {
@@ -109,8 +151,12 @@ footer {
     width: 70%;
 }
 
-span {
+.paragraph p span {
     color: red;
+}
+
+.chat p span{
+  color: red;
 }
 
 input {
