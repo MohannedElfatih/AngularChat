@@ -66,177 +66,91 @@ footer {
     padding-top: 60px;
 }
 
-.navbar {
-    margin-bottom: 0;
-    display: block;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+.navbar{
+  margin-bottom: 0;
+  display: block;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .navbar .navbar-nav:focus,
 .navbar .navbar-nav:active {
-    outline: none;
+  outline: none;
 }
-
 .navbar .navbar-nav {
-    font-weight: 700;
+  font-weight: 700;
 }
-
 .navbar .navbar-nav:focus {
-    outline: none;
+  outline: none;
+}
+.navbar-nav{
+  color: white;
+}
+.navbar-nav a{
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.90);
 }
 
-.navbar-nav {
-    color: white;
+.navbar-header{
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.45);
 }
 
-.navbar-nav a {
-    font-family: monospace;
-    color: rgba(255, 255, 255, 0.90);
+.navbar-header span{
+  font-size: 140%;
+  color: white;
 }
 
-.navbar-header {
-    font-family: monospace;
-    color: rgba(255, 255, 255, 0.45);
+.navbar-header #headerChat{
+  color: red;
 }
 
-.navbar-header span {
-    font-size: 140%;
-    color: white;
-}
-
-.navbar-header #headerChat {
-    color: red;
-}
-
-.row {
+.row{
     display: flex;
 }
 
 .chatBox {
-    margin: 5vh auto;
-    width: 80%;
-    height: 80vh;
-    background: #e0e1e2;
-    border-radius: 3px;
-    box-shadow: 0 0 25px #3a9fc4;
+    border-color: aquamarine;
+    height: 85vh;
+    width: 90%;
+    margin: auto;
+    margin-top: 16px;
+    border: 2px;
+    border-style: solid;
+    border-radius: 5px;
+    border-width: thin;
+    border-color: aqua;
 }
 
 .chat {
     display: block;
-    width: 100%;
+    width: auto;
     height: 92%;
     overflow-x: hidden;
     overflow-y: auto;
-    margin-left: 15px;
+    margin-left: 2px;
     margin-top: 4px;
     margin-bottom: 12px;
 }
 
-.chat .messages {
-    height: auto;
-    list-style: none;
-}
-
-.chat .messages li {
-    -webkit-transition: all .5s;
-    transition: all .5s;
-    text-align: right;
-}
-
-.chat .messages li:after {
-    content: '';
-    clear: both;
-    display: block;
-}
-
-.chat .messages li .head {
-    font-size: 13px;
-}
-
-.chat .messages li .name {
-    font-weight: 600;
-    position: relative;
-    text-align: right;
-}
-
-.chat .messages li .message {
-    margin: 10px;
-    font-size: 15px;
-    border-radius: 10px;
-    padding: 10px;
-    max-width: 500px;
+.chat p {
+    font-size: 16px;
+    font-family: monospace;
+    color: rgba(255, 255, 255, 0.45);
+    top: auto;
+    text-align: left;
     word-wrap: break-word;
-    position: relative;
-    color: aliceblue;
-}
-
-.chat .messages li .message:after {
-    content: '';
-    position: absolute;
-    border-style: solid;
-    border-width: 0 5px 5px;
-    display: block;
-    width: 0;
-    margin-left: -15px;
-    top: -5px;
-    left: 95%;
-    border-color: #7bc4ef transparent;
-}
-
-.chat .messages li.i .head {
-    text-align: right;
-}
-
-.chat .messages li.i .name {
-    margin-right: 5px;
-}
-
-.chat .messages li.i .message {
-    background-color: #7bc4ef;
-    float: right;
-    margin-right: 1%;
-}
-
-.chat .messages li.i .message:before {
-    right: 16px;
-    border-bottom-color: #7bc4ef;
+    word-break: break-all;
 }
 
 .chatSubmitBox {
-    margin-left: 4px;
     margin-bottom: 8px;
-    width: 100%;
-}
-
-.chatSubmitBox #chatText,
-#chatSubmit {
-    display: inline;
-}
-
-.chatSubmitBox #chatText {
-    height: 35px;
-    color: #393939;
-    background-color: white;
-    width: calc(100% - 60px);
-    margin-right: 4px;
-    align-self: auto;
-    text-align: left;
-}
-
-.chatSubmitBox #chatSubmit {
-    color: #7ac5ef;
-    text-transform: uppercase;
-    font-weight: 9000;
-    align-self: center;
-    margin: auto 0px;
-    cursor: pointer;
-    margin-left: 2px;
-    padding-bottom: 10px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    height: 5%;
+    overflow: hidden;
+    vertical-align: bottom;
+    align-self: flex-start;
+    display: flex;
+    vertical-align: bottom;
 }
 
 .form {
@@ -248,8 +162,8 @@ footer {
     color: red;
 }
 
-.chat p span {
-    color: red;
+.chat p span{
+  color: red;
 }
 
 input {
@@ -307,6 +221,29 @@ input {
 
 #notifyUser {
     font-size: 80%;
+}
+
+#chatText,
+#chatSubmit {
+    display: inline;
+}
+
+#chatText {
+    height: 35px;
+    color: aliceblue;
+    width: calc(100% - 80px);
+    margin-right: 4px;
+    margin-left: 8px;
+    align-self: auto;
+    text-align: left;
+}
+
+#chatSubmit {
+    height: 22px;
+    width: 70px;
+    margin-left: 8px;
+    margin-right: 4px;
+    align-self: flex-end;
 }
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans);
