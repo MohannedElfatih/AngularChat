@@ -27,23 +27,6 @@ app1.config(function ($routeProvider, $locationProvider) {
         });
 });
 
-/*app1.directive('messagesData', ['$location', '$anchorScroll', function($location, $anchorScroll) {
-    return {
-        scope: {
-            message: "=",
-        },
-        template: '<p><span class="testing">{{message.name}}: </span>{{message.message}}</p>',
-        restrict: 'E',
-        compile: function(element, attrs) {
-            console.log("compiler");
-            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
-        },
-        link: function(element, attrs) {
-            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
-        }
-    };
-}]);*/
-
 app1.directive('messagesData', ['$location', '$anchorScroll', function ($location, $anchorScroll) {
     return {
         scope: {
@@ -85,14 +68,51 @@ app1.directive('rightChat', function () {
     }
 });
 
-app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
+app1.directive("ngUploadChange", function () {
+    return {
+        scope: {
+            ngUploadChange: "&"
+        },
+        link: function ($scope, $element, $attrs) {
+            $element.on("change", function (event) {
+                $scope.ngUploadChange({
+                    $event: event
+                })
+            })
+            $scope.$on("$destroy", function () {
+                $element.off();
+            });
+        }
+    }
+});
+
+app1.service('User', ['$firebaseObject', function ($firebaseObject) {
+    const rootRef = firebase.database().ref();
+    this.user;
+
+    this.postUser = function () {
+        console.log(this.user);
+        var users = rootRef.child("users/" + this.user.uid);
+        users.set({
+            username: this.user.email,
+            password: this.user.displayName
+        });
+    };
+
+    this.setUser = function (userInfo) {
+        this.user = userInfo;
+    };
+}]);
+
+app1.controller('main', ['$scope', '$rootScope', '$firebaseObject', 'User', function ($scope, $rootScope, $firebaseObject, User) {
     $scope.glued = true;
-    $scope.notifyUser = "Welcome! Enter credentials to Sign up.";
+    const storageRef = firebase.storage().ref();
     const rootRef = firebase.database().ref();
     $scope.object = $firebaseObject(rootRef);
-    $scope.firebasedataRef = firebase.database().ref().child("messages").limitToLast(30);
+    $scope.firebasedataRef = rootRef.child("messages").limitToLast(30);
     console.log($rootScope.user);
     var user = firebase.auth().currentUser;
+
     $scope.firebasedataRef.on('value', snap => {
         console.log(snap.val());
         console.log(snap.numChildren());
@@ -101,9 +121,11 @@ app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
         snap.forEach(function (childSnapshot) {
             console.log(childSnapshot.child('message').val());
             console.log(childSnapshot.child('name').val());
+            console.log(childSnapshot.child('photo').val());
             $scope.messages.push({
                 "name": childSnapshot.child('name').val(),
-                "message": childSnapshot.child('message').val()
+                "message": childSnapshot.child('message').val(),
+                "photoUrl": childSnapshot.child('photo').val()
             });
         });
     });
@@ -123,20 +145,45 @@ app1.controller('main', function ($scope, $rootScope, $firebaseObject) {
             });
     }
 
-    $scope.send = function () {
-        var pushMessage = rootRef.child("messages").push();
-        pushMessage.set({
-            "message": $scope.textBox,
-            "name": $rootScope.user.displayName
-        });
+    $scope.send = function (photoUrl) {
+        if (photoUrl === null && ($scope.textBox === "" || $scope.textBox === null || $scope.textBox === undefined)) {
+            console.log("empty message");
+        } else {
+            var pushMessage = rootRef.child("messages").push();
+            console.log(User.user.displayName);
+            pushMessage.set({
+                "message": $scope.textBox === "" || $scope.textBox === undefined || $scope.textBox === null ? null : $scope.textBox,
+                "name": User.user.displayName,
+                "photo": photoUrl
+            });
 
-        $scope.textBox = '';
-        
-        document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+            $scope.textBox = '';
+            document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+        }
     };
-});
 
-app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject, $timeout) {
+    $scope.upload = function ($event) {
+        var file = $event.target.files[0];
+        var metadata = {
+            contentType: "image",
+            uploader: User.user.displayName
+        }
+        firebase.storage().ref().child('chat_images/' + file.name).put(file)
+            .then(function (snapshot) {
+                console.log('Upload successful');
+                firebase.storage().ref().child('chat_images/' + file.name).getDownloadURL().then(url => {
+                    console.log(url);
+                    $scope.send(url);
+                });
+            });
+    };
+
+    $scope.switch = function () {
+        $scope.upload.click();
+    }
+}]);
+
+app1.controller('Test', ['$location', '$scope', '$rootScope', '$firebaseObject', '$timeout', 'User', function ($location, $scope, $rootScope, $firebaseObject, $timeout, User) {
     const rootRef = firebase.database().ref();
     var object = $firebaseObject(rootRef);
     var provider = new firebase.auth.FacebookAuthProvider();
@@ -146,6 +193,7 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
     const logOut = document.getElementById('logOut');
     const connectFB = document.getElementById('connectFB');
     var signUp = document.getElementById('signUp');
+    $scope.notifyUser = "Welcome! Enter credentials to Sign up.";
 
     $scope.signUp = function (e) {
         $scope.notifyUser = "Signing Up...";
@@ -193,7 +241,6 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
             var user = result.user;
             $location.path("/main");
             $scope.$apply();
-            console.log(user);
         }).catch(e => {
             console.log("error code is " + e.code);
             console.log("error message is " + e.message);
@@ -209,10 +256,12 @@ app1.controller('Test', function ($location, $scope, $rootScope, $firebaseObject
             $location.path("/main");
             $rootScope.user = firebaseUser;
             console.log(firebaseUser);
+            User.setUser(firebaseUser);
+            User.postUser();
         } else {
             $scope.notifyUser = "Enter info to Sign Up.";
             console.log('Enter info');
             $location.path('/');
         }
     });
-});
+}]);

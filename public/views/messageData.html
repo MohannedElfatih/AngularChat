@@ -1,6 +1,9 @@
 <li class="i">
     <div class="head"><span class="name">{{message.name}}</span></div>
     <div class="talk-bubble tri-right round border right-top">
-        <div class="message">{{message.message}}</div>
+        <div class="message">
+            <p>{{message.message}}</p>
+            <img ng-src="{{message.photoUrl}}" ng-if="message.photoUrl === null || message.photoUrl === undefined ? false : true"/>
+        </div>
     </div>
 </li>

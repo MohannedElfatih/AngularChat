@@ -12,12 +12,16 @@
     <div class="row">
         <div class="chatBox col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="chat row" id="chat" scroll-glue>
-                    <ul class="messages" messages-data ng-repeat="message in messages" id={{$index}} message="message">
-                    </ul>
+                <ul class="messages" messages-data ng-repeat="message in messages" id={{$index}} message="message">
+                </ul>
             </div>
             <div class="chatSubmitBox row">
                 <input placeholder="Type your message..." type="text" ng-model="textBox" id="chatText" ng-keypress="($event.which === 13)?send():0">
-                <label id="chatSubmit" value="Submit" ng-click="send()">Send</label>
+                <div id="uploadImage">
+                    <label for="uploadFile" style="width: 100%; height: 100%;"></label>
+                </div>
+                <input type="file" id="uploadFile" ng-upload-change="upload($event)" accept="image/*" />
+                <label id="chatSubmit" value="Submit" ng-click="send(null)" required>Send</label>
             </div>
         </div>
     </div>

@@ -203,6 +203,11 @@ footer {
     border-bottom-color: #7bc4ef;
 }
 
+.chat .messages li.i .message img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .chatSubmitBox {
     margin-left: 4px;
     margin-bottom: 8px;
@@ -309,7 +314,22 @@ input {
     font-size: 80%;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+#uploadFile{
+    visibility: none;
+    display: none;
+}
+
+#uploadImage{
+    display: inline-block;
+    background-image: url(../assets/image-upload.png);
+    background-size: contain;
+    width: 3%;
+    height: 30px;
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+@import url("http://fonts.googleapis.com/css?family=Open+Sans");
 .btn {
     display: inline-block;
     *display: inline;
